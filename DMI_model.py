@@ -76,11 +76,15 @@ class MySpinModel(CouplingMPOModel):
                 ri = self.lat.position(self.lat.mps2lat_idx(i))
                 rj = self.lat.position(self.lat.mps2lat_idx(j))
                 dist = rj-ri
+                if np.linalg.norm(dist) > 1.1:
+                    # print('pbc term')
+                    # print(dist)
+                    dist *= -1
                 Dvec = D*np.cross([0,0,1], dist/np.linalg.norm(dist))
                 for k in range(3):
                     for l in range(3):
                         for m in range(3):
-                            if abs(Dvec[k]*self.epsilon(k,l,m)) > 0:
+                            if abs(Dvec[k]*self.epsilon(k,l,m)) > 0 and np.linalg.norm(dist) >= 0.9:
                                 self.add_coupling_term(Dvec[k]*self.epsilon(k,l,m), i, j, Svec[l], Svec[m])
         # done
 

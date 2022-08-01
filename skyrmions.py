@@ -20,15 +20,15 @@ D = 1.0
 Jx = Jy = Jz = -0.5
 
 bc_MPS, N_sweeps, bond_dim = 'infinite', 100, 128
-lattice, mkr, sze, L = 'Square', 's', 4000, 4
-lattice, mkr, sze, L = 'Triangular', 'H', 500, 9
+lattice, mkr, sze, L = 'Square', 's', 500, 15
+# lattice, mkr, sze, L = 'Triangular', 'H', 500, 5
 
 if bc_MPS == 'infinite':
     bc_lat_x = 'periodic'
     bc_lat_y = 'periodic'
 else:
-    bc_lat_x = 'open'
-    bc_lat_y = 'open'
+    bc_lat_x = 'periodic'
+    bc_lat_y = 'periodic'
 
 model_params = {
     'J': [Jx, Jy, Jz],
