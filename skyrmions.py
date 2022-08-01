@@ -26,7 +26,7 @@ model_params = {
     'B': [Bx, By, Bz],
     'D' : D,
     'bc_x': 'open', 'bc_y': 'ladder',
-    'Lx' : 15, 'Ly': 15, 'lattice': 'Triangular', 'conserve': None
+    'Lx' : 9, 'Ly': 9, 'lattice': 'Triangular', 'conserve': None
 }
 
 M = MySpinModel(model_params)
@@ -68,12 +68,12 @@ pos = pos - pos_av
 
 df = pd.DataFrame()
 df['x'] = pos[:,0]
-df['y'] = pos[:,0]
+df['y'] = pos[:,1]
 df['Sx'] = exp_Sx
 df['Sy'] = exp_Sy
 df['Sz'] = exp_Sz
 
-df.to_csv('data.csv')
+df.to_csv('lobs.csv')
 
 fig, ax = plt.subplots(1,1)
 ax.scatter(pos[:,0], pos[:,1], marker='H', s=500, cmap='RdBu_r', c=exp_Sz)
@@ -86,12 +86,12 @@ ax.set_xlim(1.25*mmx)
 ax.set_ylim(1.25*mmy)
 ax.axis('off')
 plt.tight_layout()
-plt.savefig("last_sim.jpg")
+plt.savefig("snap.jpg")
 plt.close()
 
 data = {"psi": psi,  # e.g. an MPS
         "model": M,
         "parameters": model_params}
 
-with h5py.File("file.h5", 'w') as f:
+with h5py.File("save.h5", 'w') as f:
     hdf5_io.save_to_hdf5(f, data)
