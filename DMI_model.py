@@ -81,7 +81,6 @@ class MySpinModel(CouplingMPOModel):
                         for m in range(3):
                             if abs(Dvec[k]*self.epsilon(k,l,m)) > 0:
                                 self.add_coupling_term(Dvec[k]*self.epsilon(k,l,m), i, j, Svec[l], Svec[m])
-        # exit()
         # done
 
 
