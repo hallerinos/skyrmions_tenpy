@@ -82,8 +82,8 @@ class MySpinModel(CouplingMPOModel):
                 self.add_coupling(Ji, u1, Si, u2, Si, dx)
             mps_i, mps_j, _, _ = self.lat.possible_couplings(u1, u2, dx)
             for i, j in zip(mps_i, mps_j):
-                if i < j: # ensure proper ordering for TenPy
-                        i, j = j, i
+                if i > j: # ensure proper ordering for TenPy (operators commute)
+                    i, j = j, i
                 ri = self.lat.position(self.lat.mps2lat_idx(i))
                 rj = self.lat.position(self.lat.mps2lat_idx(j))
                 Dvec = D*np.cross([0,0,1], rj-ri)
@@ -91,7 +91,7 @@ class MySpinModel(CouplingMPOModel):
                     for l in range(3):
                         for m in range(3):
                             if abs(Dvec[k]*self.epsilon(k,l,m)) > 0:
-                                self.add_coupling_term(Dvec[k]*self.epsilon(k,l,m), j, i, Svec[l], Svec[m])
+                                self.add_coupling_term(Dvec[k]*self.epsilon(k,l,m), i, j, Svec[l], Svec[m])
         # exit()
         # done
 
