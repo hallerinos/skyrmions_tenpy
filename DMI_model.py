@@ -75,7 +75,8 @@ class MySpinModel(CouplingMPOModel):
                     i, j = j, i
                 ri = self.lat.position(self.lat.mps2lat_idx(i))
                 rj = self.lat.position(self.lat.mps2lat_idx(j))
-                Dvec = D*np.cross([0,0,1], rj-ri)
+                dist = rj-ri
+                Dvec = D*np.cross([0,0,1], dist/np.linalg.norm(dist))
                 for k in range(3):
                     for l in range(3):
                         for m in range(3):

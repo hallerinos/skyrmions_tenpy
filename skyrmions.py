@@ -17,23 +17,32 @@ tenpy.tools.misc.setup_logging(to_stdout="INFO")
 Bx = By = 0.0
 Bz = -0.5
 D = 1.0
-Jx = Jy = Jz = -0.5*D
+Jx = Jy = Jz = -0.5
 
-bond_dim = 32
+bc_MPS, N_sweeps, bond_dim = 'infinite', 100, 128
+lattice, mkr, sze, L = 'Square', 's', 4000, 4
+lattice, mkr, sze, L = 'Triangular', 'H', 500, 9
+
+if bc_MPS == 'infinite':
+    bc_lat_x = 'periodic'
+    bc_lat_y = 'periodic'
+else:
+    bc_lat_x = 'open'
+    bc_lat_y = 'open'
 
 model_params = {
     'J': [Jx, Jy, Jz],
     'B': [Bx, By, Bz],
     'D' : D,
-    'bc_x': 'open', 'bc_y': 'ladder',
-    'Lx' : 9, 'Ly': 9, 'lattice': 'Triangular', 'conserve': None
+    'bc_x': bc_lat_x, 'bc_y': bc_lat_y, 'bc_MPS': bc_MPS,
+    'Lx' : L, 'Ly': L, 'lattice': lattice, 'conserve': None
 }
 
 M = MySpinModel(model_params)
 
 sites = M.lat.mps_sites()
 p_state = ['down']*len(sites)
-psi = MPS.from_product_state(sites, p_state)
+psi = MPS.from_product_state(sites, p_state, bc=bc_MPS)
 
 # generate a random initial state
 TEBD_params = {'N_steps': 10, 'trunc_params':{'chi_max': bond_dim}}
@@ -42,9 +51,17 @@ eng.run()
 psi.canonical_form()
 
 dmrg_params = {
-    'mixer': False,  # setting this to True helps to escape local minima
+    'mixer': None,  # no subspace expansion
+    'diag_method': 'lanczos',
+    'lanczos_params': {
+        # https://tenpy.readthedocs.io/en/latest/reference/tenpy.linalg.lanczos.LanczosGroundState.html#cfg-config-Lanczos
+        'N_max': 3,  # fix the number of Lanczos iterations: the number of `matvec` calls
+        'N_min': 3,
+        'N_cache': 20,  # keep the states during Lanczos in memory
+        'reortho': False,
+    },
     'max_E_err': 1.e-6,
-    'max_sweeps': 10,
+    'max_sweeps': N_sweeps,
     'trunc_params': {
         'chi_max': bond_dim,
         'svd_min': 1.e-12,
@@ -76,7 +93,7 @@ df['Sz'] = exp_Sz
 df.to_csv('lobs.csv')
 
 fig, ax = plt.subplots(1,1)
-ax.scatter(pos[:,0], pos[:,1], marker='H', s=500, cmap='RdBu_r', c=exp_Sz)
+ax.scatter(pos[:,0], pos[:,1], marker=mkr, s=sze, cmap='RdBu_r', c=exp_Sz, vmin=-0.5, vmax=0.5)
 ax.quiver(pos[:,0], pos[:,1], exp_Sx, exp_Sy, units='xy', width=0.07, scale=vmax, pivot='middle', color='white')
 ax.set_aspect('equal')
 
@@ -86,7 +103,7 @@ ax.set_xlim(1.25*mmx)
 ax.set_ylim(1.25*mmy)
 ax.axis('off')
 plt.tight_layout()
-plt.savefig("snap.jpg")
+plt.savefig("snap.jpg", dpi=300)
 plt.close()
 
 data = {"psi": psi,  # e.g. an MPS
