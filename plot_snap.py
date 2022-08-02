@@ -4,7 +4,9 @@ import numpy as np
 from glob import glob
 
 lobs_files = glob('*.csv')
-for fn in lobs_files:
+print(lobs_files)
+mkrs, szes = ['H', 's', 'H', 'H', 'H'], [160, 1000, 550, 550, 550]
+for (fn, mkr, sze) in zip(lobs_files, mkrs, szes):
     df = pd.read_csv(fn)
 
     abs_exp_Svec = np.sqrt(np.power(df['Sx'],2) + np.power(df['Sy'],2) + np.power(df['Sz'],2))
@@ -13,8 +15,8 @@ for fn in lobs_files:
 
     rmax = np.max(df['x']**2+df['y']**2)
 
-    fig, ax = plt.subplots(1,1)
-    ax.scatter(df['x'], df['y'], marker='H', s=25000/rmax, cmap='RdBu_r', c=df['Sz'])
+    fig, ax = plt.subplots(1,1, figsize=(5,5))
+    ax.scatter(df['x'], df['y'], marker=mkr, s=sze, cmap='RdBu_r', c=df['Sz'], vmin=-0.5, vmax=0.5)
     ax.quiver(df['x'], df['y'], df['Sx'], df['Sy'], units='xy', width=0.07, scale=vmax, pivot='middle', color='white')
     ax.set_aspect('equal')
 

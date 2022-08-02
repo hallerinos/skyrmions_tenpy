@@ -15,13 +15,13 @@ import pandas as pd
 tenpy.tools.misc.setup_logging(to_stdout="INFO")
 
 Bx = By = 0.0
-Bz = -0.5
+Bz = -2.0
 D = 1.0
 Jx = Jy = Jz = -0.5
 
-bc_MPS, N_sweeps, bond_dim = 'infinite', 100, 128
-lattice, mkr, sze, L = 'Square', 's', 500, 15
-# lattice, mkr, sze, L = 'Triangular', 'H', 500, 5
+bc_MPS, N_sweeps, E_tol, bond_dim = 'infinite', 1000, 1e-10, 64
+lattice, mkr, sze, L = 'Square', 's', 500, 9
+lattice, mkr, sze, L = 'Triangular', 'H', 500, 9
 
 if bc_MPS == 'infinite':
     bc_lat_x = 'periodic'
@@ -60,7 +60,7 @@ dmrg_params = {
         'N_cache': 20,  # keep the states during Lanczos in memory
         'reortho': False,
     },
-    'max_E_err': 1.e-6,
+    'max_E_err': E_tol,
     'max_sweeps': N_sweeps,
     'trunc_params': {
         'chi_max': bond_dim,
@@ -106,7 +106,7 @@ plt.tight_layout()
 plt.savefig("snap.jpg", dpi=300)
 plt.close()
 
-data = {"psi": psi,  # e.g. an MPS
+data = {"psi": psi,
         "model": M,
         "parameters": model_params}
 
