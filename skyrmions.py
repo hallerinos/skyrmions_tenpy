@@ -15,11 +15,11 @@ import pandas as pd
 tenpy.tools.misc.setup_logging(to_stdout="INFO")
 
 Bx = By = 0.0
-Bz = -2.0
+Bz = -1.0
 D = 1.0
 Jx = Jy = Jz = -0.5
 
-bc_MPS, N_sweeps, E_tol, bond_dim = 'infinite', 1000, 1e-10, 64
+bc_MPS, N_sweeps, E_tol, bond_dim = 'finite', 1000, 1e-12, 512
 lattice, mkr, sze, L = 'Square', 's', 500, 9
 lattice, mkr, sze, L = 'Triangular', 'H', 500, 9
 
